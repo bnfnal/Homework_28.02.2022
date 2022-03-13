@@ -5,51 +5,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
-class ThreadN implements Runnable {
-
-    int[] array;
-    int count;
-    int numb;
-
-    public void run() {
-        bubbleSort(array);
-    }
-
-    public int[] getArray(){
-        return array;
-    }
-
-    ThreadN(int[] a, int k, int ind){
-        count = k;
-        numb = ind;
-        int n = a.length;
-        int m = n/k;
-        if ( ind == k - 1){
-            m += n%k;
-        }
-        array = new int[m];
-        for (int j = 0; j < m; j++) {
-            array[j] = a[n/k * ind + j];
-        }
-    }
-
-    public static void bubbleSort(int[] array) {
-        boolean sorted = false;
-        int x;
-        while(!sorted) {
-            sorted = true;
-            for (int i = 0; i < array.length - 1; i++) {
-                if (array[i] > array[i+1]) {
-                    x = array[i];
-                    array[i] = array[i+1];
-                    array[i+1] = x;
-                    sorted = false;
-                }
-            }
-        }
-    }
-}
-
 class Main{
     public static void main(String[] args) {
         System.out.println("Введите количество элементов в массиве");
@@ -61,25 +16,25 @@ class Main{
         int[] a2 = new int[n];
         long[] time = new long[n+1];
 
-        System.out.println("Ваш массив: ");
-        for (int i = 0; i < a.length; i++) {
-            a[i] = rand.nextInt();
-            a1[i] = a[i];
-            a2[i] = a[i];
-            System.out.print(a[i] + " ");
-        }
-        System.out.println();
+//        System.out.println("Ваш массив: ");
+//        for (int i = 0; i < a.length; i++) {
+//            a[i] = rand.nextInt();
+//            a1[i] = a[i];
+//            a2[i] = a[i];
+//            System.out.print(a[i] + " ");
+//        }
+//        System.out.println();
 
         time[0] = System.currentTimeMillis();
         bubbleSort(a1);
         time[0] = System.currentTimeMillis() - time[0];
 
 
-        System.out.println("Массив отсортированный пузырьком:");
-        for (int i = 0; i < a.length; i++) {
-            System.out.print(a1[i] + " ");
-        }
-        System.out.println();
+//        System.out.println("Массив отсортированный пузырьком:");
+//        for (int i = 0; i < a.length; i++) {
+//            System.out.print(a1[i] + " ");
+//        }
+//        System.out.println();
 
 
         System.out.println("Время сортировки пузырьком = " + time[0]);
@@ -130,21 +85,21 @@ class Main{
         }
 
 
-        System.out.println("Отсортированный массив после объединения всех частей:");
-        for (int i = 0; i < a2.length; i++) {
-            System.out.print(a2[i] + " ");
-        }
-        System.out.println();
+//        System.out.println("Отсортированный массив после объединения всех частей:");
+//        for (int i = 0; i < a2.length; i++) {
+//            System.out.print(a2[i] + " ");
+//        }
+//        System.out.println();
 
         System.out.println("Оптимальное количество частей для сортировки = " + minArg);
         System.out.println("Время для оптимального количества частей = " + min);
 
 
-        System.out.println("Время сортировки масива для разного количества частей:");
-        for (int i = 1; i < time.length; i++) {
-            System.out.print(time[i] + " ");
-        }
-        System.out.println();
+//        System.out.println("Время сортировки масива для разного количества частей:");
+//        for (int i = 1; i < time.length; i++) {
+//            System.out.print(time[i] + " ");
+//        }
+//        System.out.println();
 
 
 
