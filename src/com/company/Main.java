@@ -12,7 +12,7 @@ class ThreadN implements Runnable {
     int numb;
 
     public void run() {
-        sort(array);
+        bubbleSort(array);
     }
 
     public int[] getArray(){
@@ -33,7 +33,7 @@ class ThreadN implements Runnable {
         }
     }
 
-    public static void sort(int[] array) {
+    public static void bubbleSort(int[] array) {
         boolean sorted = false;
         int x;
         while(!sorted) {
@@ -61,26 +61,26 @@ class Main{
         int[] a2 = new int[n];
         long[] time = new long[n+1];
 
-        //System.out.println("Ваш массив: ");
+        System.out.println("Ваш массив: ");
         for (int i = 0; i < a.length; i++) {
             a[i] = rand.nextInt();
             a1[i] = a[i];
             a2[i] = a[i];
-            //System.out.print(a[i] + " ");
+            System.out.print(a[i] + " ");
         }
-        //System.out.println();
+        System.out.println();
 
         time[0] = System.currentTimeMillis();
-        sort(a1);
+        bubbleSort(a1);
         time[0] = System.currentTimeMillis() - time[0];
 
-        /*
+
         System.out.println("Массив отсортированный пузырьком:");
         for (int i = 0; i < a.length; i++) {
             System.out.print(a1[i] + " ");
         }
         System.out.println();
-         */
+
 
         System.out.println("Время сортировки пузырьком = " + time[0]);
         System.out.println();
@@ -88,43 +88,10 @@ class Main{
         System.out.println("Введите количество частей, на которые нужно разделить исходный массив для сортировки");
         int count = sc.nextInt();
         if (count  > n) count = n;
-        int[] bc = new int[n];
-        ThreadN[] threadsNCount = new ThreadN[count];
-        Thread[] threadsCount = new Thread[count];
-        long timeCount = System.currentTimeMillis();
-        try {
-            for (int i = 0; i < count; i++) {
-                threadsNCount[i] = new ThreadN(a2, count, i);
-                threadsCount[i] = new Thread(threadsNCount[i]);
-                threadsCount[i].start();
-                threadsCount[i].join();
-            }
-            for (int i = 0; i < count; i++) {
-                for (int j = 0; j < n / count; j++) {
-                    bc[n / count * i + j] = threadsNCount[i].getArray()[j];
-                }
-                for (int j = 0; j < n/count + n%count; j++) {
-                    bc[n/count * (count-1) + j] = threadsNCount[count-1].getArray()[j];
-                }
-            }
-            sort(bc);
-            if (count == n){
-                for (int i = 0; i < bc.length; i++) {
-                    a2[i] = bc[i];
-                }
-            }
-        }
-        catch(InterruptedException e){
-            System.out.println("Something went wrong");
-        }
-        timeCount = System.currentTimeMillis() - timeCount;
-        System.out.println("Время для выбранного числа частей = " + timeCount);
-        System.out.println();
 
         long min = 1000000000;
         int minArg = 1000000;
         for (int k = 1; k < n+1; k++){
-            int[] b = new int[n];
             ThreadN[] threadsN = new ThreadN[k];
             Thread[] threads = new Thread[k];
             time[k] = System.currentTimeMillis();
@@ -135,16 +102,14 @@ class Main{
                     threads[i].start();
                     threads[i].join();
                 }
-                for (int i = 0; i < k; i++) {
-                    for (int j = 0; j < n / k; j++) {
-                        b[n / k * i + j] = threadsN[i].getArray()[j];
-                    }
-                    for (int j = 0; j < n/k + n%k; j++) {
-                        b[n/k * (k-1) + j] = threadsN[k-1].getArray()[j];
-                    }
+
+                ArrayList res = new ArrayList();
+                res.add(threadsN[0].getArray());
+                for (int i = 1; i < k; i++) {
+                    res.add(mergeSort((int[]) res.get(i-1), threadsN[i].getArray()));
                 }
-                sort(b);
-                if (k == n){
+                int[] b = (int[]) res.get(k-1);
+                if (k == count){
                     for (int i = 0; i < b.length; i++) {
                         a2[i] = b[i];
                     }
@@ -158,33 +123,35 @@ class Main{
                 min = time[k];
                 minArg = k;
             }
+            if (k == count){
+                System.out.println("Время для выбранного числа частей = " + time[count]);
+                System.out.println();
+            }
         }
 
-        /*
+
         System.out.println("Отсортированный массив после объединения всех частей:");
         for (int i = 0; i < a2.length; i++) {
             System.out.print(a2[i] + " ");
         }
         System.out.println();
 
-         */
-
         System.out.println("Оптимальное количество частей для сортировки = " + minArg);
         System.out.println("Время для оптимального количества частей = " + min);
 
-        /*
+
         System.out.println("Время сортировки масива для разного количества частей:");
         for (int i = 1; i < time.length; i++) {
             System.out.print(time[i] + " ");
         }
         System.out.println();
 
-         */
+
 
     }
 
     // сортировка пузырьком
-    public static void sort(int[] array) {
+    public static void bubbleSort(int[] array) {
         boolean sorted = false;
         int x;
         while(!sorted) {
@@ -198,5 +165,44 @@ class Main{
                 }
             }
         }
+    }
+
+    // сортировка слиянием
+    public static int[] mergeSort(int[] a, int[] b) {
+        int[] c = new int[a.length + b.length];
+        int i = 0;
+        int j = 0;
+        for (int k = 0; k < a.length + b.length; k++)
+        {
+            if (i > a.length - 1)
+            {
+                int x = b[j];
+                c[k] = x;
+                j++;
+            }
+            else {
+                if (j > b.length - 1)
+                    {
+                        int x = a[i];
+                        c[k] = x;
+                        i++;
+                    }
+                else{
+                    if (a[i] < b[j])
+                    {
+                        int x = a[i];
+                        c[k] = x;
+                        i++;
+                    }
+                    else
+                    {
+                        int x = b[j];
+                        c[k] = x;
+                        j++;
+                    }
+                }
+            }
+        }
+        return  c;
     }
 }
