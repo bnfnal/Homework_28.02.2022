@@ -16,14 +16,14 @@ class Main{
         int[] a2 = new int[n];
         long[] time = new long[n+1];
 
-//        System.out.println("Ваш массив: ");
-//        for (int i = 0; i < a.length; i++) {
-//            a[i] = rand.nextInt();
-//            a1[i] = a[i];
-//            a2[i] = a[i];
-//            System.out.print(a[i] + " ");
-//        }
-//        System.out.println();
+        //System.out.println("Ваш массив: ");
+        for (int i = 0; i < a.length; i++) {
+            a[i] = rand.nextInt();
+            a1[i] = a[i];
+            a2[i] = a[i];
+            //System.out.print(a[i] + " ");
+        }
+        //System.out.println();
 
         time[0] = System.currentTimeMillis();
         bubbleSort(a1);
@@ -44,9 +44,54 @@ class Main{
         int count = sc.nextInt();
         if (count  > n) count = n;
 
+        long T = System.currentTimeMillis();
         long min = 1000000000;
         int minArg = 1000000;
+        ThreadN[] threadsNCount = new ThreadN[count];
+        Thread[] threadsCount = new Thread[count];
+        time[count] = System.currentTimeMillis();
+        try {
+            for (int i = 0; i < count; i++) {
+                threadsNCount[i] = new ThreadN(a2, count, i);
+                threadsCount[i] = new Thread(threadsNCount[i]);
+                threadsCount[i].start();
+            }
+            for (int i = 0; i < count; i++) {
+                threadsCount[i].join();
+            }
+
+            ArrayList res = new ArrayList();
+            res.add(threadsNCount[0].getArray());
+            for (int i = 1; i < count; i++) {
+                res.add(mergeSort((int[]) res.get(i-1), threadsNCount[i].getArray()));
+            }
+            int[] b = (int[]) res.get(count-1);
+            for (int i = 0; i < b.length; i++) {
+                a2[i] = b[i];
+            }
+        }
+        catch(InterruptedException e){
+            System.out.println("Something went wrong");
+        }
+        time[count] = System.currentTimeMillis() - time[count];
+        if(time[count] < min){
+            min = time[count];
+            minArg = count;
+        }
+        System.out.println("Время для выбранного числа частей = " + time[count]);
+//        System.out.println("Отсортированный массив после объединения всех частей:");
+//        for (int i = 0; i < a2.length; i++) {
+//            System.out.print(a2[i] + " ");
+//        }
+        System.out.println();
+        System.out.println();
+
+
         for (int k = 1; k < n+1; k++){
+            if (k==count) {
+                System.out.println(k + " " + time[k]);
+                continue;
+            }
             ThreadN[] threadsN = new ThreadN[k];
             Thread[] threads = new Thread[k];
             time[k] = System.currentTimeMillis();
@@ -55,6 +100,8 @@ class Main{
                     threadsN[i] = new ThreadN(a2, k, i);
                     threads[i] = new Thread(threadsN[i]);
                     threads[i].start();
+                }
+                for (int i = 0; i < k; i++) {
                     threads[i].join();
                 }
 
@@ -78,31 +125,13 @@ class Main{
                 min = time[k];
                 minArg = k;
             }
-            if (k == count){
-                System.out.println("Время для выбранного числа частей = " + time[count]);
-                System.out.println();
-            }
+            System.out.println(k + " " + time[k] + " min = " + min + " при k = " + minArg + " полное время: " + ((System.currentTimeMillis()-T)/1000));
         }
-
-
-//        System.out.println("Отсортированный массив после объединения всех частей:");
-//        for (int i = 0; i < a2.length; i++) {
-//            System.out.print(a2[i] + " ");
-//        }
-//        System.out.println();
 
         System.out.println("Оптимальное количество частей для сортировки = " + minArg);
         System.out.println("Время для оптимального количества частей = " + min);
-
-
-//        System.out.println("Время сортировки масива для разного количества частей:");
-//        for (int i = 1; i < time.length; i++) {
-//            System.out.print(time[i] + " ");
-//        }
-//        System.out.println();
-
-
-
+        T = System.currentTimeMillis() - T;
+        System.out.println("Итоговое время сортировки = " + T);
     }
 
     // сортировка пузырьком
