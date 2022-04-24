@@ -44,7 +44,6 @@ class Main{
         int count = sc.nextInt();
         if (count  > n) count = n;
 
-        long T = System.currentTimeMillis();
         long min = 1000000000;
         int minArg = 1000000;
         ThreadN[] threadsNCount = new ThreadN[count];
@@ -92,12 +91,16 @@ class Main{
                 System.out.println(k + " " + time[k]);
                 continue;
             }
+            int[] a3 = new int[n];
+            for (int i = 0; i < a.length; i++) {
+                a3[i] = a[i];
+            }
+            time[k] = System.currentTimeMillis();
             ThreadN[] threadsN = new ThreadN[k];
             Thread[] threads = new Thread[k];
-            time[k] = System.currentTimeMillis();
             try {
                 for (int i = 0; i < k; i++) {
-                    threadsN[i] = new ThreadN(a2, k, i);
+                    threadsN[i] = new ThreadN(a3, k, i);
                     threads[i] = new Thread(threadsN[i]);
                     threads[i].start();
                 }
@@ -111,11 +114,6 @@ class Main{
                     res.add(mergeSort((int[]) res.get(i-1), threadsN[i].getArray()));
                 }
                 int[] b = (int[]) res.get(k-1);
-                if (k == count){
-                    for (int i = 0; i < b.length; i++) {
-                        a2[i] = b[i];
-                    }
-                }
             }
             catch(InterruptedException e){
                 System.out.println("Something went wrong");
@@ -125,13 +123,11 @@ class Main{
                 min = time[k];
                 minArg = k;
             }
-            System.out.println(k + " " + time[k] + " min = " + min + " при k = " + minArg + " полное время: " + ((System.currentTimeMillis()-T)/1000));
+            System.out.println("k = " + k + " " + "time[k] = " + time[k] + " минимальное время = " + min + " при kMin = " + minArg );
         }
 
         System.out.println("Оптимальное количество частей для сортировки = " + minArg);
         System.out.println("Время для оптимального количества частей = " + min);
-        T = System.currentTimeMillis() - T;
-        System.out.println("Итоговое время сортировки = " + T);
     }
 
     // сортировка пузырьком
